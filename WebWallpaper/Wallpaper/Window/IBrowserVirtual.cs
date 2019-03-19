@@ -21,7 +21,8 @@ namespace WebWallpaper.Wallpaper.Window
         void Stop();
 
         //Nullable
-        Bitmap GetLastRendered();
+        Bitmap GetRenderData();
+        Task<Bitmap> GetScreenshot();
 
     }
 }

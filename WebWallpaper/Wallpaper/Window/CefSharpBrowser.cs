@@ -85,12 +85,20 @@ namespace WebWallpaper.Wallpaper.Window
             Browser.Stop();
         }
 
-        public Bitmap GetLastRendered()
+        public Bitmap GetRenderData()
         {
             if (!Started)
                 return null;
 
             return Browser.ScreenshotOrNull(PopupBlending.Blend);
+        }
+
+        public async Task<Bitmap> GetScreenshot()
+        {
+            if (!Started)
+                return null;
+
+            return await Browser.ScreenshotAsync();
         }
     }
 }

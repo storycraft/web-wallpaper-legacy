@@ -18,7 +18,7 @@ namespace WebWallpaper.Wallpaper
             BrowserManager = manager;
         }
 
-        public bool RequireRedraw
+        public bool CanDraw
         {
             get
             {
@@ -39,7 +39,7 @@ namespace WebWallpaper.Wallpaper
                 BrowserManager.Browser.Size = wallpaperSize;
             }
 
-            Bitmap bitmap = BrowserManager.Browser.GetLastRendered();
+            Bitmap bitmap = BrowserManager.Browser.GetRenderData();
 
             if (bitmap == null)
                 return;

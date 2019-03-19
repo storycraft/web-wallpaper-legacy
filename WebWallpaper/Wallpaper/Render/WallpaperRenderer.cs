@@ -91,7 +91,7 @@ namespace WebWallpaper.Wallpaper.Render
 
                 while (Running)
                 {
-                    if (renderEnabled && RenderTarget != null && RenderTarget.RequireRedraw)
+                    if (renderEnabled && RenderTarget != null && RenderTarget.CanDraw)
                     {
                         RenderTarget.Draw(this, graphics);
                     }
