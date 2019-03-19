@@ -44,7 +44,10 @@ namespace WebWallpaper.Wallpaper
             if (bitmap == null)
                 return;
 
-            graphics.DrawImage(bitmap, renderer.WallpaperOffset);
+            using (bitmap)
+            {
+                graphics.DrawImage(bitmap, renderer.WallpaperOffset);
+            }
         }
     }
 }

@@ -44,9 +44,9 @@ namespace WebWallpaper.Config
             {
                 Logger.Warn("Failed to read config.json " + e.Message);
                 Logger.Log("Use default instead");
-            }
 
-            CurrentConfig = DefaultConfig;
+                CurrentConfig = DefaultConfig;
+            }
         }
 
         public async Task SaveConfigAsync()
