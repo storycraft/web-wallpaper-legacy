@@ -31,6 +31,8 @@ namespace WebWallpaper.Wallpaper
 
             Browser = ChromiumFactory.Instance.CreateBrowser(new BrowserSettings() { SkipCorsCheck = true }, configManager.CurrentConfig.startURL);
 
+            Logger.Log("Browser started. startURL: " + configManager.CurrentConfig.startURL);
+
             Browser.Start();
             Ready = true;
         }
