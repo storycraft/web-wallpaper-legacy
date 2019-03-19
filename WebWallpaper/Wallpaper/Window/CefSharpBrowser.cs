@@ -56,7 +56,7 @@ namespace WebWallpaper.Wallpaper.Window
             {
                 browserSettings.FileAccessFromFileUrls = CefState.Enabled;
                 browserSettings.UniversalAccessFromFileUrls = CefState.Enabled;
-                browserSettings.WebSecurity = CefState.Enabled;
+                browserSettings.WebSecurity = CefState.Disabled;
             }
 
             Browser = new ChromiumWebBrowser("", browserSettings);

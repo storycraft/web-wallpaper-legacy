@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebWallpaper.Config;
+using WebWallpaper.Log;
 using WebWallpaper.Wallpaper.Window;
 
 namespace WebWallpaper.Wallpaper

@@ -53,6 +53,10 @@ namespace WebWallpaper.Wallpaper
                 MultiThreadedMessageLoop = true
             };
 
+            cefSettings.CefCommandLineArgs.Add("autoplay-policy", "no-user-gesture-required");
+
+            cefSettings.EnableAudio();
+
             Cef.Initialize(cefSettings);
         }
 
