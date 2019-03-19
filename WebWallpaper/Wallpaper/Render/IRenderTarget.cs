@@ -10,7 +10,7 @@ namespace WebWallpaper.Wallpaper.Render
     public interface IRenderTarget
     {
 
-        bool RequireRedraw { get; }
+        bool CanDraw { get; }
 
         void Draw(WallpaperRenderer renderer, Graphics graphics);
 
