@@ -88,12 +88,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config\ConfigEntry.cs" />
+    <Compile Include="Config\ConfigManager.cs" />
     <Compile Include="Data\DataStorage.cs" />
     <Compile Include="Data\DiskStorage.cs" />
     <Compile Include="Data\IStorage.cs" />
     <Compile Include="Input\InputManager.cs" />
     <Compile Include="Input\MouseInputState.cs" />
     <Compile Include="Log\Logger.cs" />
+    <Compile Include="Native\NativeWin32.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Thread\InputThread.cs" />
@@ -106,6 +108,7 @@
     <Compile Include="Thread\BrowserThread.cs" />
     <Compile Include="Thread\WorkerThread.cs" />
     <Compile Include="Wallpaper\BrowserFactory.cs" />
+    <Compile Include="Wallpaper\BrowserInputSender.cs" />
     <Compile Include="Wallpaper\BrowserManager.cs" />
     <Compile Include="Wallpaper\BrowserRenderTarget.cs" />
     <Compile Include="Wallpaper\ChromiumFactory.cs" />
@@ -121,7 +124,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Native\" />
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="d2dlib.dll" />
+    <Content Include="d2dlibexport.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

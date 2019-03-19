@@ -15,7 +15,9 @@ namespace WebWallpaper.Wallpaper.Render
 {
     public class WallpaperRenderer : IDisposable
     {
-        
+
+        public ConfigManager ConfigManager { get; private set; }
+
         public IRenderTarget RenderTarget { get; set; }
 
         public bool Initialized { get; private set; }
@@ -63,12 +65,14 @@ namespace WebWallpaper.Wallpaper.Render
             RenderTarget = target;
         }
 
-        public void Initialize(ConfigEntry entry)
+        public void Initialize(ConfigManager configManager)
         {
             if (Initialized) return;
             Initialized = true;
 
-            renderEnabled = entry.renderEnabled;
+            ConfigManager = configManager;
+
+            renderEnabled = ConfigManager.CurrentConfig.renderEnabled;
 
             // pre spawn worker to draw faster
             if (HandleUtil.NeedSeparation)

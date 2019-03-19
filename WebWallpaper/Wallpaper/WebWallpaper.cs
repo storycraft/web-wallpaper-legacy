@@ -18,8 +18,7 @@ namespace WebWallpaper.Wallpaper
     public class WebWallpaper : IDisposable
     {
 
-        public ConfigEntry DefaultConfig { get; }
-        public ConfigEntry ProgramConfig { get; protected set; }
+        public ConfigManager ConfigManager { get; }
 
         public ThreadManager ThreadManager { get; }
 
@@ -33,17 +32,13 @@ namespace WebWallpaper.Wallpaper
 
         public DataStorage DataStorage { get; }
 
-        public WebWallpaper(ConfigEntry defaultConfig) : this()
-        {
-            DefaultConfig = defaultConfig;
-        }
-
-        protected WebWallpaper()
+        public WebWallpaper(ConfigEntry defaultConfig)
         {
             DataStorage = new DataStorage()
             {
                 DataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "web-wallpaper")
             };
+            ConfigManager = new ConfigManager(DataStorage, defaultConfig);
             ThreadManager = new ThreadManager();
             InputManager = new InputManager();
             BrowserManager = new BrowserManager();
@@ -52,16 +47,15 @@ namespace WebWallpaper.Wallpaper
 
         public void Start()
         {
-            LoadOrDefaultConfigAsync().ContinueWith((Task<ConfigEntry> loadTask) =>
+            ConfigManager.LoadConfigAsync().ContinueWith((Task loadTask) =>
             {
-                ProgramConfig = loadTask.Result;
                 Logger.Log("Config loaded successfully");
 
-                SaveConfigAsync().ContinueWith((Task saveTask) => {
+                ConfigManager.SaveConfigAsync().ContinueWith((Task saveTask) => {
                     Logger.Log("Config saved");
                 });
 
-                WallpaperRenderer.Initialize(ProgramConfig);
+                WallpaperRenderer.Initialize(ConfigManager);
 
                 ThreadManager.Run(InputThread = new InputThread(UpdateInput));
                 ThreadManager.Run(BrowserThread = new BrowserThread(BrowserInit));
@@ -85,7 +79,7 @@ namespace WebWallpaper.Wallpaper
         {
             Logger.Log("Browser thread started");
 
-            BrowserManager.InitBrowser(ProgramConfig);
+            BrowserManager.InitBrowser(ConfigManager);
         }
         #endregion
 
@@ -97,53 +91,6 @@ namespace WebWallpaper.Wallpaper
             while (InputThread.Started)
             {
                 InputManager.UpdateInput();
-            }
-        }
-        #endregion
-
-        #region Config
-        private async Task<ConfigEntry> LoadOrDefaultConfigAsync()
-        {
-            try
-            {
-                byte[] data = await DataStorage.Get("config.json");
-                JObject rawConfig = JObject.Parse(Encoding.UTF8.GetString(data));
-
-                ConfigEntry entry = new ConfigEntry()
-                {
-                    startURL = rawConfig.Value<string>("startURL"),
-                    renderEnabled = rawConfig.Value<bool>("renderEnabled"),
-                    handleMovement = rawConfig.Value<bool>("handleMovement"),
-                    clickEnabled = rawConfig.Value<bool>("clickEnabled")
-                };
-
-                return entry;
-            }
-            catch (Exception e)
-            {
-                Logger.Warn("Failed to read config.json " + e.Message);
-                Logger.Log("Use default instead");
-            }
-
-            return DefaultConfig;
-        }
-
-        private async Task SaveConfigAsync()
-        {
-            try
-            {
-                JObject obj = new JObject
-                {
-                    ["startURL"] = ProgramConfig.startURL,
-                    ["renderEnabled"] = ProgramConfig.renderEnabled,
-                    ["handleMovement"] = ProgramConfig.handleMovement,
-                    ["clickEnabled"] = ProgramConfig.clickEnabled
-                };
-
-                await DataStorage.Set("config.json", Encoding.UTF8.GetBytes(obj.ToString()));
-            } catch (Exception e)
-            {
-                Logger.Error("Cannot save config " + e);
             }
         }
         #endregion
