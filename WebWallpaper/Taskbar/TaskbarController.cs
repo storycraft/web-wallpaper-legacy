@@ -64,8 +64,8 @@ namespace WebWallpaper.Taskbar
 
         private void MenuOpening(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            MouseMoveEnabledItem.Checked = WebWallpaper.ConfigManager.CurrentConfig.ClickEnabled.Value;
-            MouseInteractionEnabledItem.Checked = WebWallpaper.ConfigManager.CurrentConfig.HandleMovement.Value;
+            MouseMoveEnabledItem.Checked = WebWallpaper.ConfigManager.CurrentConfig.HandleMovement.Value;
+            MouseInteractionEnabledItem.Checked = WebWallpaper.ConfigManager.CurrentConfig.ClickEnabled.Value;
             RenderEnabledItem.Checked = WebWallpaper.ConfigManager.CurrentConfig.RenderEnabled.Value;
         }
 
