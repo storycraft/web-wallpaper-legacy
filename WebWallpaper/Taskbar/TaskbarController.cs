@@ -85,7 +85,19 @@ namespace WebWallpaper.Taskbar
             }
             else if (e.ClickedItem == SetURLItem)
             {
+                if (!WebWallpaper.BrowserManager.Ready)
+                {
+                    MessageBox.Show("Web process is still loading. Please wait.");
+                    return;
+                }
 
+                string url = WebWallpaper.BrowserManager.Browser.CurrentURL;
+                DialogResult result = InputUtil.InputBox("WebWallpaper", "Type Wallpaper url here", ref url);
+
+                if (result.HasFlag(DialogResult.OK))
+                {
+                    WebWallpaper.BrowserManager.Browser.CurrentURL = url;
+                }
             }
             else if (e.ClickedItem == RenderEnabledItem)
             {

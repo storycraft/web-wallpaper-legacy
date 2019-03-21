@@ -103,6 +103,7 @@
     <Compile Include="Native\NativeWin32.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Taskbar\InputUtil.cs" />
     <Compile Include="Taskbar\TaskbarController.cs" />
     <Compile Include="Thread\ControllerThread.cs" />
     <Compile Include="Thread\InputThread.cs" />
