@@ -17,9 +17,11 @@ namespace WebWallpaper.Wallpaper.Render
     public class WallpaperRenderer : IDisposable
     {
 
-        public ConfigManager ConfigManager { get; private set; }
+        public WebWallpaper WebWallpaper { get; }
 
-        public IRenderTarget RenderTarget { get; set; }
+        public ConfigManager ConfigManager { get => WebWallpaper.ConfigManager; }
+
+        public IRenderTarget RenderTarget { get => WebWallpaper.BrowserManager.RenderTarget; }
 
         public bool Initialized { get; private set; }
 
@@ -58,20 +60,18 @@ namespace WebWallpaper.Wallpaper.Render
             }
         }
 
-        public WallpaperRenderer(IRenderTarget target)
+        public WallpaperRenderer(WebWallpaper webWallpaper)
         {
             Initialized = false;
             Running = false;
 
-            RenderTarget = target;
+            WebWallpaper = webWallpaper;
         }
 
-        public void Initialize(ConfigManager configManager)
+        public void Initialize()
         {
             if (Initialized) return;
             Initialized = true;
-
-            ConfigManager = configManager;
 
             renderEnabled = ConfigManager.CurrentConfig.renderEnabled;
 
@@ -84,6 +84,9 @@ namespace WebWallpaper.Wallpaper.Render
 
         public int Run()
         {
+            if (Running)
+                return -1;
+
             Running = true;
 
             var graphics = DesktopTool.GetWallpaperGraphics();

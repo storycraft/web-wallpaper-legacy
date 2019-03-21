@@ -22,6 +22,8 @@ namespace WebWallpaper.Wallpaper
 
         public ThreadManager ThreadManager { get; }
 
+        private System.Threading.Thread MainThread { get; }
+
         private InputThread InputThread { get; set; }
         private BrowserThread BrowserThread { get; set; }
         private RenderThread WallpaperThread { get; set; }
@@ -34,6 +36,8 @@ namespace WebWallpaper.Wallpaper
 
         public WebWallpaper(ConfigEntry defaultConfig)
         {
+            MainThread = System.Threading.Thread.CurrentThread;
+
             DataStorage = new DataStorage()
             {
                 DataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "web-wallpaper")
@@ -41,8 +45,8 @@ namespace WebWallpaper.Wallpaper
             ConfigManager = new ConfigManager(DataStorage, defaultConfig);
             ThreadManager = new ThreadManager();
             InputManager = new InputManager();
-            BrowserManager = new BrowserManager();
-            WallpaperRenderer = new WallpaperRenderer(BrowserManager.RenderTarget);
+            BrowserManager = new BrowserManager(InputManager);
+            WallpaperRenderer = new WallpaperRenderer(this);
         }
 
         public void Start()
@@ -55,7 +59,7 @@ namespace WebWallpaper.Wallpaper
                     Logger.Log("Config saved");
                 });
 
-                WallpaperRenderer.Initialize(ConfigManager);
+                WallpaperRenderer.Initialize();
 
                 ThreadManager.Run(InputThread = new InputThread(UpdateInput));
                 ThreadManager.Run(BrowserThread = new BrowserThread(BrowserInit));
@@ -88,10 +92,7 @@ namespace WebWallpaper.Wallpaper
         {
             Logger.Log("Input thread started");
 
-            while (InputThread.Started)
-            {
-                InputManager.UpdateInput();
-            }
+            InputManager.Listen();
         }
         #endregion
 

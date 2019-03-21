@@ -55,7 +55,7 @@ namespace WebWallpaper.Wallpaper
 
                 NativeWin32.SelectObject(memDc, hBitmap);
 
-                bool result = NativeWin32.BitBlt(hdc,
+                NativeWin32.BitBlt(hdc,
                     offset.X, offset.Y,
                     wallpaperSize.Width, wallpaperSize.Height,
                     memDc,

@@ -100,5 +100,46 @@ namespace WebWallpaper.Wallpaper.Window
 
             return await Browser.ScreenshotAsync();
         }
+
+        public void SimulateMouseMove(int x, int y)
+        {
+            if (!Started)
+                return;
+
+            Browser.GetBrowserHost().SendMouseMoveEvent(new MouseEvent(x, y, CefEventFlags.None), false);
+        }
+
+        public void SimulateMouseClick(int x, int y, bool right)
+        {
+            if (!Started)
+                return;
+
+            SimulateMouseDown(x, y, right);
+            SimulateMouseUp(x, y, right);
+        }
+
+        public void SimulateMouseDown(int x, int y, bool right)
+        {
+            if (!Started)
+                return;
+
+            Browser.GetBrowserHost().SendMouseClickEvent(new MouseEvent(x, y, CefEventFlags.None), right ? MouseButtonType.Right : MouseButtonType.Left, false, 1);
+        }
+
+        public void SimulateMouseUp(int x, int y, bool right)
+        {
+            if (!Started)
+                return;
+
+            Browser.GetBrowserHost().SendMouseClickEvent(new MouseEvent(x, y, CefEventFlags.None), right ? MouseButtonType.Right : MouseButtonType.Left, true, 1);
+        }
+
+        public void SimulateMouseWheel(int x, int y, int deltaX, int deltaY)
+        {
+            if (!Started)
+                return;
+
+            Browser.GetBrowserHost().SendMouseWheelEvent(new MouseEvent(x, y, CefEventFlags.None), deltaX, deltaY);
+        }
     }
 }

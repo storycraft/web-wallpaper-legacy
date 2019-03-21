@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebWallpaper.Config;
+using WebWallpaper.Input;
 using WebWallpaper.Log;
 using WebWallpaper.Wallpaper.Window;
 
@@ -16,9 +17,13 @@ namespace WebWallpaper.Wallpaper
         public bool Ready { get; private set; }
 
         public CefSharpBrowser Browser { get; private set; }
+        
+        public InputManager InputManager { get; }
+        public BrowserInputSender InputSender { get; private set; }
 
-        public BrowserManager()
+        public BrowserManager(InputManager inputManager)
         {
+            InputManager = inputManager;
             RenderTarget = new BrowserRenderTarget(this);
         }
 
@@ -32,15 +37,22 @@ namespace WebWallpaper.Wallpaper
 
             Browser = ChromiumFactory.Instance.CreateBrowser(new BrowserSettings() { SkipCorsCheck = true }, configManager.CurrentConfig.startURL);
 
+            Browser.Start();
+
+            InputSender = new BrowserInputSender(InputManager, Browser);
+
+            InputSender.SimulateMouseDown = InputSender.SimulateMouseUp = configManager.CurrentConfig.clickEnabled;
+            InputSender.SimulateMouseMove = configManager.CurrentConfig.handleMovement;
+
             Logger.Log("Browser started. startURL: " + configManager.CurrentConfig.startURL);
 
-            Browser.Start();
             Ready = true;
         }
         #endregion
 
         public void Dispose()
         {
+            InputSender.Dispose();
             Browser.Stop();
             ChromiumFactory.Instance.Shutdown();
 

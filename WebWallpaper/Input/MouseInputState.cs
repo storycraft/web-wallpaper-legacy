@@ -8,9 +8,19 @@ namespace WebWallpaper.Input
 {
     public struct MouseInputState
     {
-        public bool mouseDown;
-
         public int mouseX;
         public int mouseY;
+
+        public int wheelDeltaX;
+        public int wheelDeltaY;
+
+        public MouseButtonType PressedButton;
+
+        public enum MouseButtonType
+        {
+            LEFT = 0x01,
+            RIGHT = 0x02,
+            ALL = 0x03
+        }
     }
 }

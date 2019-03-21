@@ -20,6 +20,12 @@ namespace WebWallpaper.Wallpaper.Window
         void Start();
         void Stop();
 
+        void SimulateMouseMove(int x, int y);
+        void SimulateMouseClick(int x, int y, bool right);
+        void SimulateMouseDown(int x, int y, bool right);
+        void SimulateMouseUp(int x, int y, bool right);
+        void SimulateMouseWheel(int x, int y, int deltaX, int deltaY);
+
         //Nullable
         Bitmap GetRenderData();
         Task<Bitmap> GetScreenshot();
