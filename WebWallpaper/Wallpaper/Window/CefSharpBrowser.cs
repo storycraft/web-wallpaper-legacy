@@ -75,7 +75,7 @@ namespace WebWallpaper.Wallpaper.Window
 
             while (!Browser.IsBrowserInitialized) { System.Threading.Thread.Sleep(1); }
 
-            Browser.SetZoomLevel(0.0);
+            Browser.SetZoomLevel(1.0);
 
             Browser.Load(lastSetURL);
         }
