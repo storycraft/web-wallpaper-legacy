@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using WebWallpaper.Native;
 using WebWallpaper.Wallpaper.Render;
 
 namespace WebWallpaper.Wallpaper
@@ -31,9 +34,11 @@ namespace WebWallpaper.Wallpaper
             }
         }
 
-        public void Draw(WallpaperRenderer renderer, Graphics graphics)
+        public void Draw(WallpaperRenderer renderer, IntPtr hdc, IntPtr memDc)
         {
+            Point offset = renderer.WallpaperOffset;
             Size wallpaperSize = renderer.WallpaperSize;
+
             if (!BrowserManager.Browser.Size.Equals(wallpaperSize))
             {
                 BrowserManager.Browser.Size = wallpaperSize;
@@ -46,7 +51,20 @@ namespace WebWallpaper.Wallpaper
 
             using (bitmap)
             {
-                graphics.DrawImage(bitmap, renderer.WallpaperOffset);
+                IntPtr hBitmap = bitmap.GetHbitmap();
+
+                NativeWin32.SelectObject(memDc, hBitmap);
+
+                bool result = NativeWin32.BitBlt(hdc,
+                    offset.X, offset.Y,
+                    wallpaperSize.Width, wallpaperSize.Height,
+                    memDc,
+                    0, 0,
+                    NativeWin32.TernaryRasterOperations.SRCCOPY);
+
+                NativeWin32.DeleteObject(hBitmap);
+
+                //Graphics.FromHdcInternal(hdc).DrawImage(bitmap, renderer.WallpaperOffset);
             }
         }
     }

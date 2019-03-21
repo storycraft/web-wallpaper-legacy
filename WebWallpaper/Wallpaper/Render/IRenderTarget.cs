@@ -12,7 +12,7 @@ namespace WebWallpaper.Wallpaper.Render
 
         bool CanDraw { get; }
 
-        void Draw(WallpaperRenderer renderer, Graphics graphics);
+        void Draw(WallpaperRenderer renderer, IntPtr hdc, IntPtr memDc);
 
     }
 }

@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using WebWallpaper.Config;
 using WebWallpaper.Input;
 using WebWallpaper.Log;
+using WebWallpaper.Native;
 
 namespace WebWallpaper.Wallpaper.Render
 {
@@ -85,20 +86,26 @@ namespace WebWallpaper.Wallpaper.Render
         {
             Running = true;
 
+            var graphics = DesktopTool.GetWallpaperGraphics();
+
+            var hdc = graphics.GetHdc();
+            var memDc = NativeWin32.CreateCompatibleDC(hdc);
+
             try
             {
-                var graphics = DesktopTool.GetWallpaperGraphics();
-
                 while (Running)
                 {
                     if (renderEnabled && RenderTarget != null && RenderTarget.CanDraw)
                     {
-                        RenderTarget.Draw(this, graphics);
+                        RenderTarget.Draw(this, hdc, memDc);
                     }
                 }
             } catch (Exception e)
             {
                 Logger.Error("Wallpaper rendering failed retrying after 1 seconds " + e);
+
+                NativeWin32.DeleteObject(memDc);
+
                 System.Threading.Thread.Sleep(1000);
 
                 if (Running)

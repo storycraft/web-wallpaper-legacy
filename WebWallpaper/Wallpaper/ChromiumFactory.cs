@@ -54,6 +54,7 @@ namespace WebWallpaper.Wallpaper
             };
 
             cefSettings.CefCommandLineArgs.Add("autoplay-policy", "no-user-gesture-required");
+            cefSettings.CefCommandLineArgs.Add("enable-gpu", "true");
 
             cefSettings.EnableAudio();
 
