@@ -7,7 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WebWallpaper.Bind;
 using WebWallpaper.Config;
+using WebWallpaper.Display;
 using WebWallpaper.Input;
 using WebWallpaper.Log;
 using WebWallpaper.Native;
@@ -19,7 +21,7 @@ namespace WebWallpaper.Wallpaper.Render
 
         public WebWallpaper WebWallpaper { get; }
 
-        public ConfigManager ConfigManager { get => WebWallpaper.ConfigManager; }
+        public ScreenManager ScreenManager { get; }
 
         public IRenderTarget RenderTarget { get => WebWallpaper.BrowserManager.RenderTarget; }
 
@@ -27,38 +29,7 @@ namespace WebWallpaper.Wallpaper.Render
 
         public bool Running { get; private set; }
 
-        private bool renderEnabled;
-        public bool RenderEnabled
-        {
-            get => renderEnabled;
-
-            set
-            {
-                renderEnabled = value;
-                
-                if (!value)
-                {
-                    DesktopTool.UpdateWallpaper();
-                }
-            }
-        }
-
-        public Size WallpaperSize
-        {
-            get
-            {
-                return Screen.PrimaryScreen.Bounds.Size;
-            }
-        }
-
-        public Point WallpaperOffset
-        {
-            get
-            {
-                Rectangle rect = SystemInformation.VirtualScreen;
-                return new Point(-rect.Left, -rect.Top);
-            }
-        }
+        public Bindable<bool> RenderEnabled { get; }
 
         public WallpaperRenderer(WebWallpaper webWallpaper)
         {
@@ -66,14 +37,25 @@ namespace WebWallpaper.Wallpaper.Render
             Running = false;
 
             WebWallpaper = webWallpaper;
+            ScreenManager = new ScreenManager();
+
+            RenderEnabled = webWallpaper.ConfigManager.CurrentConfig.RenderEnabled;
+
+            RenderEnabled.OnChange += OnRenderModeChange;
+        }
+
+        private void OnRenderModeChange(bool oldValue, bool newValue)
+        {
+            if (!newValue)
+            {
+                DesktopTool.UpdateWallpaper();
+            }
         }
 
         public void Initialize()
         {
             if (Initialized) return;
             Initialized = true;
-
-            renderEnabled = ConfigManager.CurrentConfig.renderEnabled;
 
             // pre spawn worker to draw faster
             if (HandleUtil.NeedSeparation)
@@ -98,7 +80,7 @@ namespace WebWallpaper.Wallpaper.Render
             {
                 while (Running)
                 {
-                    if (renderEnabled && RenderTarget != null && RenderTarget.CanDraw)
+                    if (RenderEnabled.Value && RenderTarget != null && RenderTarget.CanDraw)
                     {
                         RenderTarget.Draw(this, hdc, memDc);
                     }

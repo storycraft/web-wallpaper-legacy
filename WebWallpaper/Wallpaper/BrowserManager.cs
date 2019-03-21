@@ -35,16 +35,16 @@ namespace WebWallpaper.Wallpaper
 
             ChromiumFactory.Instance.Init();
 
-            Browser = ChromiumFactory.Instance.CreateBrowser(new BrowserSettings() { SkipCorsCheck = true }, configManager.CurrentConfig.startURL);
+            Browser = ChromiumFactory.Instance.CreateBrowser(new BrowserSettings() { SkipCorsCheck = true }, configManager.CurrentConfig.StartURL.Value);
 
             Browser.Start();
 
             InputSender = new BrowserInputSender(InputManager, Browser);
 
-            InputSender.SimulateMouseDown = InputSender.SimulateMouseUp = configManager.CurrentConfig.clickEnabled;
-            InputSender.SimulateMouseMove = configManager.CurrentConfig.handleMovement;
+            InputSender.SimulateMouseDown = InputSender.SimulateMouseUp = configManager.CurrentConfig.ClickEnabled;
+            InputSender.SimulateMouseMove = configManager.CurrentConfig.HandleMovement;
 
-            Logger.Log("Browser started. startURL: " + configManager.CurrentConfig.startURL);
+            Logger.Log("Browser started. startURL: " + configManager.CurrentConfig.StartURL.Value);
 
             Ready = true;
         }

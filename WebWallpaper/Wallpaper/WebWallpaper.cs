@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WebWallpaper.Config;
 using WebWallpaper.Data;
+using WebWallpaper.Display;
 using WebWallpaper.Input;
 using WebWallpaper.Log;
+using WebWallpaper.Taskbar;
 using WebWallpaper.Thread;
 using WebWallpaper.Wallpaper.Render;
 
@@ -22,17 +24,22 @@ namespace WebWallpaper.Wallpaper
 
         public ThreadManager ThreadManager { get; }
 
+        public bool Running { get; private set; }
+
         private System.Threading.Thread MainThread { get; }
 
         private InputThread InputThread { get; set; }
         private BrowserThread BrowserThread { get; set; }
         private RenderThread WallpaperThread { get; set; }
+        private ControllerThread ControllerThread { get; set; }
 
         public InputManager InputManager { get; }
         public WallpaperRenderer WallpaperRenderer { get; }
         public BrowserManager BrowserManager { get; }
 
         public DataStorage DataStorage { get; }
+
+        public TaskbarController TaskbarController { get; }
 
         public WebWallpaper(ConfigEntry defaultConfig)
         {
@@ -42,15 +49,23 @@ namespace WebWallpaper.Wallpaper
             {
                 DataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "web-wallpaper")
             };
+
             ConfigManager = new ConfigManager(DataStorage, defaultConfig);
             ThreadManager = new ThreadManager();
             InputManager = new InputManager();
             BrowserManager = new BrowserManager(InputManager);
             WallpaperRenderer = new WallpaperRenderer(this);
+            TaskbarController = new TaskbarController(this);
+
+            Running = false;
         }
 
         public void Start()
         {
+            if (Running)
+                return;
+            Running = true;
+            
             ConfigManager.LoadConfigAsync().ContinueWith((Task loadTask) =>
             {
                 Logger.Log("Config loaded successfully");
@@ -64,9 +79,18 @@ namespace WebWallpaper.Wallpaper
                 ThreadManager.Run(InputThread = new InputThread(UpdateInput));
                 ThreadManager.Run(BrowserThread = new BrowserThread(BrowserInit));
                 ThreadManager.Run(WallpaperThread = new RenderThread(RenderInit));
+                ThreadManager.Run(ControllerThread = new ControllerThread(ControllerInit));
             });
 
-            Application.Run();
+            while (Running)
+            {
+                System.Threading.Thread.Sleep(1);
+            };
+        }
+
+        public void Stop()
+        {
+            Running = false;
         }
 
         #region Renderering
@@ -75,6 +99,15 @@ namespace WebWallpaper.Wallpaper
             Logger.Log("Rendering thread started");
 
             WallpaperRenderer.Run();
+        }
+        #endregion
+
+        #region Controller
+        public void ControllerInit()
+        {
+            Logger.Log("Controller thread started");
+
+            TaskbarController.Run();
         }
         #endregion
 
@@ -98,6 +131,7 @@ namespace WebWallpaper.Wallpaper
 
         public void Dispose()
         {
+            TaskbarController.Dispose();
             WallpaperRenderer.Dispose();
             BrowserManager.Dispose();
             ThreadManager.StopAll();

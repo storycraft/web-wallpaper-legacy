@@ -8,13 +8,15 @@ using WebWallpaper.Log;
 
 namespace WebWallpaper.Input
 {
-    public class InputManager : IDisposable
+    public class InputManager
     {
 
         public MouseInputState internalMouseState;
         public MouseInputState Mouse { get => internalMouseState; }
 
         public bool Listening { get; set; }
+
+        private MouseWatcher mouseWatcher;
 
         public delegate void MouseEventArgs(MouseInputState state);
         
@@ -41,63 +43,56 @@ namespace WebWallpaper.Input
 
             Listening = true;
 
-            try
+            using (var hookFactory = new EventHookFactory())
             {
-                using (var hookFactory = new EventHookFactory())
+                mouseWatcher = hookFactory.GetMouseWatcher();
+                mouseWatcher.Start();
+                mouseWatcher.OnMouseInput += (s, e) =>
                 {
-                    var mouseWatcher = hookFactory.GetMouseWatcher();
-                    mouseWatcher.Start();
-                    mouseWatcher.OnMouseInput += (s, e) =>
+                    try
                     {
-
                         internalMouseState.mouseX = e.Point.x;
                         internalMouseState.mouseY = e.Point.y;
 
                         if (e.Message == EventHook.Hooks.MouseMessages.WM_MOUSEMOVE)
                         {
-                            OnMouseMove(Mouse);
+                            OnMouseMove?.Invoke(Mouse);
                         }
                         else if (e.Message == EventHook.Hooks.MouseMessages.WM_LBUTTONDOWN)
                         {
                             internalMouseState.PressedButton |= MouseInputState.MouseButtonType.LEFT;
-                            OnMouseDown(Mouse);
+                            OnMouseDown?.Invoke(Mouse);
                         }
                         else if (e.Message == EventHook.Hooks.MouseMessages.WM_RBUTTONDOWN)
                         {
                             internalMouseState.PressedButton |= MouseInputState.MouseButtonType.RIGHT;
-                            OnMouseDown(Mouse);
+                            OnMouseDown?.Invoke(Mouse);
                         }
                         else if (e.Message == EventHook.Hooks.MouseMessages.WM_LBUTTONUP)
                         {
-                            OnMouseUp(Mouse);
+                            OnMouseUp?.Invoke(Mouse);
                             internalMouseState.PressedButton ^= MouseInputState.MouseButtonType.LEFT;
                         }
                         else if (e.Message == EventHook.Hooks.MouseMessages.WM_RBUTTONUP)
                         {
-                            OnMouseUp(Mouse);
+                            OnMouseUp?.Invoke(Mouse);
                             internalMouseState.PressedButton ^= MouseInputState.MouseButtonType.RIGHT;
                         }
                         else if (e.Message == EventHook.Hooks.MouseMessages.WM_MOUSEWHEEL)
                         {
-                            OnMouseWheel(Mouse);
+                            OnMouseWheel?.Invoke(Mouse);
                         }
-                    };
-
-                    while (Listening) ;
-
-                    mouseWatcher.Stop();
-                }
-            } catch (Exception e)
-            {
-                Logger.Error("Error on input update " + e + " retrying after 1 seconds");
-                Listening = false;
-                Listen();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error("Error on input update " + ex);
+                    }
+                };
             }
-        }
 
-        public void Dispose()
-        {
+            while (Listening) ;
 
+            mouseWatcher.Stop();
         }
     }
 }

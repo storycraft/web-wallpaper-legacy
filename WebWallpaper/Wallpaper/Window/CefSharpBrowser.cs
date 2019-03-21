@@ -87,7 +87,7 @@ namespace WebWallpaper.Wallpaper.Window
 
         public Bitmap GetRenderData()
         {
-            if (!Started)
+            if (!Ready)
                 return null;
 
             return Browser.ScreenshotOrNull(PopupBlending.Blend);
@@ -95,7 +95,7 @@ namespace WebWallpaper.Wallpaper.Window
 
         public async Task<Bitmap> GetScreenshot()
         {
-            if (!Started)
+            if (!Ready)
                 return null;
 
             return await Browser.ScreenshotAsync();
@@ -103,7 +103,7 @@ namespace WebWallpaper.Wallpaper.Window
 
         public void SimulateMouseMove(int x, int y)
         {
-            if (!Started)
+            if (!Ready)
                 return;
 
             Browser.GetBrowserHost().SendMouseMoveEvent(new MouseEvent(x, y, CefEventFlags.None), false);
@@ -111,7 +111,7 @@ namespace WebWallpaper.Wallpaper.Window
 
         public void SimulateMouseClick(int x, int y, bool right)
         {
-            if (!Started)
+            if (!Ready)
                 return;
 
             SimulateMouseDown(x, y, right);
@@ -120,7 +120,7 @@ namespace WebWallpaper.Wallpaper.Window
 
         public void SimulateMouseDown(int x, int y, bool right)
         {
-            if (!Started)
+            if (!Ready)
                 return;
 
             Browser.GetBrowserHost().SendMouseClickEvent(new MouseEvent(x, y, CefEventFlags.None), right ? MouseButtonType.Right : MouseButtonType.Left, false, 1);
@@ -128,7 +128,7 @@ namespace WebWallpaper.Wallpaper.Window
 
         public void SimulateMouseUp(int x, int y, bool right)
         {
-            if (!Started)
+            if (!Ready)
                 return;
 
             Browser.GetBrowserHost().SendMouseClickEvent(new MouseEvent(x, y, CefEventFlags.None), right ? MouseButtonType.Right : MouseButtonType.Left, true, 1);
@@ -136,7 +136,7 @@ namespace WebWallpaper.Wallpaper.Window
 
         public void SimulateMouseWheel(int x, int y, int deltaX, int deltaY)
         {
-            if (!Started)
+            if (!Ready)
                 return;
 
             Browser.GetBrowserHost().SendMouseWheelEvent(new MouseEvent(x, y, CefEventFlags.None), deltaX, deltaY);

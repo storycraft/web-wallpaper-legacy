@@ -12,8 +12,8 @@ namespace WebWallpaper.Config
     public class ConfigManager
     {
 
-        public ConfigEntry DefaultConfig { get; set; }
-        public ConfigEntry CurrentConfig { get; set; }
+        public ConfigEntry DefaultConfig { get; }
+        public ConfigEntry CurrentConfig { get; }
 
         public DataStorage ConfigStorage { get; }
 
@@ -21,6 +21,8 @@ namespace WebWallpaper.Config
         {
             DefaultConfig = defaultConfig;
             ConfigStorage = configStorage;
+
+            CurrentConfig = new ConfigEntry();
         }
 
         public async Task LoadConfigAsync()
@@ -30,22 +32,17 @@ namespace WebWallpaper.Config
                 byte[] data = await ConfigStorage.Get("config.json");
                 JObject rawConfig = JObject.Parse(Encoding.UTF8.GetString(data));
 
-                ConfigEntry entry = new ConfigEntry()
-                {
-                    startURL = rawConfig.Value<string>("startURL"),
-                    renderEnabled = rawConfig.Value<bool>("renderEnabled"),
-                    handleMovement = rawConfig.Value<bool>("handleMovement"),
-                    clickEnabled = rawConfig.Value<bool>("clickEnabled")
-                };
-
-                CurrentConfig = entry;
+                CurrentConfig.StartURL.Value = rawConfig.Value<string>("startURL");
+                CurrentConfig.RenderEnabled.Value = rawConfig.Value<bool>("renderEnabled");
+                CurrentConfig.HandleMovement.Value = rawConfig.Value<bool>("handleMovement");
+                CurrentConfig.ClickEnabled.Value = rawConfig.Value<bool>("clickEnabled");
             }
             catch (Exception e)
             {
                 Logger.Warn("Failed to read config.json " + e.Message);
                 Logger.Log("Use default instead");
 
-                CurrentConfig = DefaultConfig;
+                setDefault();
             }
         }
 
@@ -55,10 +52,10 @@ namespace WebWallpaper.Config
             {
                 JObject obj = new JObject
                 {
-                    ["startURL"] = CurrentConfig.startURL,
-                    ["renderEnabled"] = CurrentConfig.renderEnabled,
-                    ["handleMovement"] = CurrentConfig.handleMovement,
-                    ["clickEnabled"] = CurrentConfig.clickEnabled
+                    ["startURL"] = CurrentConfig.StartURL.Value,
+                    ["renderEnabled"] = CurrentConfig.RenderEnabled.Value,
+                    ["handleMovement"] = CurrentConfig.HandleMovement.Value,
+                    ["clickEnabled"] = CurrentConfig.ClickEnabled.Value
                 };
 
                 await ConfigStorage.Set("config.json", Encoding.UTF8.GetBytes(obj.ToString()));
@@ -71,7 +68,10 @@ namespace WebWallpaper.Config
 
         public void setDefault()
         {
-            CurrentConfig = DefaultConfig;
+            CurrentConfig.StartURL.Value = DefaultConfig.StartURL.Value;
+            CurrentConfig.RenderEnabled.Value = DefaultConfig.RenderEnabled.Value;
+            CurrentConfig.HandleMovement.Value = DefaultConfig.HandleMovement.Value;
+            CurrentConfig.ClickEnabled.Value = DefaultConfig.ClickEnabled.Value;
         }
         
     }

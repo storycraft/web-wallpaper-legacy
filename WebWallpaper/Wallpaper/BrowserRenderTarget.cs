@@ -36,8 +36,8 @@ namespace WebWallpaper.Wallpaper
 
         public void Draw(WallpaperRenderer renderer, IntPtr hdc, IntPtr memDc)
         {
-            Point offset = renderer.WallpaperOffset;
-            Size wallpaperSize = renderer.WallpaperSize;
+            Point offset = renderer.ScreenManager.WallpaperOffset;
+            Size wallpaperSize = renderer.ScreenManager.WallpaperSize;
 
             if (!BrowserManager.Browser.Size.Equals(wallpaperSize))
             {

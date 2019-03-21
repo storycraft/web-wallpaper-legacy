@@ -25,6 +25,8 @@ namespace WebWallpaper.Wallpaper
             }
         }
 
+        private System.Threading.Thread UIThread { get; set; }
+
         private ChromiumFactory() : base()
         {
 
@@ -58,15 +60,23 @@ namespace WebWallpaper.Wallpaper
 
             cefSettings.EnableAudio();
 
+            UIThread = System.Threading.Thread.CurrentThread;
+
             Cef.Initialize(cefSettings);
         }
 
         public override void Shutdown()
         {
+            if (System.Threading.Thread.CurrentThread != UIThread)
+            {
+                Cef.UIThreadTaskFactory.StartNew(Shutdown);
+                return;
+            }
+
             if (!Ready)
                 return;
             Ready = false;
-
+            
             Cef.Shutdown();
         }
     }

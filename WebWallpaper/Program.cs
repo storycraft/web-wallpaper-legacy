@@ -12,12 +12,7 @@ namespace WebWallpaper
     {
         static void Main(string[] args)
         {
-            ConfigEntry defaultConfig = new ConfigEntry() {
-                startURL = "https://www.google.com",
-                renderEnabled = true,
-                handleMovement = true,
-                clickEnabled = false
-            };
+            ConfigEntry defaultConfig = new ConfigEntry("https://google.com", true, true, false);
 
             Logger.Log("WebWallpaper started");
 
