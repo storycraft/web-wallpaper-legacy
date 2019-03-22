@@ -26,6 +26,9 @@ namespace WebWallpaper.Wallpaper.Window
         void SimulateMouseUp(int x, int y, bool right);
         void SimulateMouseWheel(int x, int y, int deltaX, int deltaY);
 
+        void OpenDevTools();
+        void CloseDevTools();
+
         //Nullable
         Bitmap GetRenderData();
         Task<Bitmap> GetScreenshot();

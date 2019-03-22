@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -30,6 +31,10 @@ namespace WebWallpaper.Wallpaper.Render
         public bool Running { get; private set; }
 
         public Bindable<bool> RenderEnabled { get; }
+
+        public long LastRender { get; private set; }
+
+        public long FPS { get; private set; }
 
         public WallpaperRenderer(WebWallpaper webWallpaper)
         {
@@ -65,7 +70,7 @@ namespace WebWallpaper.Wallpaper.Render
                 HandleUtil.SpawnWorker();
             }
         }
-
+        
         public int Run()
         {
             if (Running)
@@ -73,19 +78,27 @@ namespace WebWallpaper.Wallpaper.Render
 
             Running = true;
 
-            var graphics = DesktopTool.GetWallpaperGraphics();
+            Graphics graphics = DesktopTool.GetWallpaperGraphics();
 
-            var hdc = graphics.GetHdc();
-            var memDc = NativeWin32.CreateCompatibleDC(hdc);
+            IntPtr hdc = graphics.GetHdc();
+            IntPtr memDc = NativeWin32.CreateCompatibleDC(hdc);
+
+            LastRender = DateTime.Now.Ticks;
 
             try
             {
                 while (Running)
                 {
+
                     if (RenderEnabled.Value && RenderTarget != null && RenderTarget.CanDraw)
                     {
                         RenderTarget.Draw(this, hdc, memDc);
                     }
+
+                    long now = DateTime.Now.Ticks;
+
+                    FPS = (now - LastRender) / 1000;
+                    LastRender = now;
 
                     System.Threading.Thread.Sleep(1);
                 }

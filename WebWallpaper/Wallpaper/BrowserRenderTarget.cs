@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,8 @@ namespace WebWallpaper.Wallpaper
 {
     public class BrowserRenderTarget : IRenderTarget
     {
+
+        private volatile Bitmap lastRenderData;
 
         public BrowserManager BrowserManager { get; }
 
@@ -34,9 +37,8 @@ namespace WebWallpaper.Wallpaper
             }
         }
 
-        public void Draw(WallpaperRenderer renderer, IntPtr hdc, IntPtr memDc)
+        public bool Draw(WallpaperRenderer renderer, IntPtr hdc, IntPtr memDc)
         {
-            Point offset = renderer.ScreenManager.WallpaperOffset;
             Size wallpaperSize = renderer.ScreenManager.WallpaperSize;
 
             if (!BrowserManager.Browser.Size.Equals(wallpaperSize))
@@ -44,26 +46,39 @@ namespace WebWallpaper.Wallpaper
                 BrowserManager.Browser.Size = wallpaperSize;
             }
 
-            using (Bitmap bitmap = BrowserManager.Browser.GetRenderData())
+            Bitmap bitmap = BrowserManager.Browser.GetRenderData();
+
+            if (bitmap == null)
             {
-                if (bitmap == null)
-                    return;
-
-                IntPtr hBitmap = bitmap.GetHbitmap();
-
-                NativeWin32.SelectObject(memDc, hBitmap);
-
-                NativeWin32.BitBlt(hdc,
-                    offset.X, offset.Y,
-                    wallpaperSize.Width, wallpaperSize.Height,
-                    memDc,
-                    0, 0,
-                    NativeWin32.TernaryRasterOperations.SRCCOPY);
-
-                NativeWin32.DeleteObject(hBitmap);
-
-                //Graphics.FromHdcInternal(hdc).DrawImage(bitmap, renderer.WallpaperOffset);
+                if (lastRenderData != null)
+                    bitmap = lastRenderData;
+                else
+                {
+                    return false;
+                }
+            } else
+            {
+                lastRenderData?.Dispose();
             }
+
+            IntPtr hBitmap = bitmap.GetHbitmap();
+
+            NativeWin32.SelectObject(memDc, hBitmap);
+
+            Point offset = renderer.ScreenManager.WallpaperOffset;
+
+            bool flag = NativeWin32.BitBlt(hdc,
+                offset.X, offset.Y,
+                wallpaperSize.Width, wallpaperSize.Height,
+                memDc,
+                0, 0,
+                NativeWin32.TernaryRasterOperations.SRCCOPY);
+
+            NativeWin32.DeleteObject(hBitmap);
+            
+            lastRenderData = bitmap;
+
+            return flag;
         }
     }
 }

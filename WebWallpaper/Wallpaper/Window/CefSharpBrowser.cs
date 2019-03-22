@@ -141,5 +141,21 @@ namespace WebWallpaper.Wallpaper.Window
 
             Browser.GetBrowserHost().SendMouseWheelEvent(new MouseEvent(x, y, CefEventFlags.None), deltaX, deltaY);
         }
+
+        public void OpenDevTools()
+        {
+            if (!Ready)
+                return;
+
+            Browser.ShowDevTools();
+        }
+
+        public void CloseDevTools()
+        {
+            if (!Ready)
+                return;
+
+            Browser.CloseDevTools();
+        }
     }
 }

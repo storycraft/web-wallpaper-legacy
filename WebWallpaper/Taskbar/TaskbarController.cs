@@ -21,6 +21,8 @@ namespace WebWallpaper.Taskbar
 
         protected ToolStripMenuItem RenderEnabledItem { get; private set; }
 
+        protected ToolStripMenuItem OpenDevToolsItem { get; private set; }
+
         protected ToolStripMenuItem ExitItem { get; private set; }
 
         public bool Visible
@@ -103,6 +105,10 @@ namespace WebWallpaper.Taskbar
             {
                 WebWallpaper.ConfigManager.CurrentConfig.RenderEnabled.Value = !WebWallpaper.ConfigManager.CurrentConfig.RenderEnabled.Value;
             }
+            else if (e.ClickedItem == OpenDevToolsItem)
+            {
+                WebWallpaper.BrowserManager?.Browser.OpenDevTools();
+            }
         }
 
         protected virtual ContextMenuStrip BuildContextMenu()
@@ -135,6 +141,11 @@ namespace WebWallpaper.Taskbar
             menu.Items.Add(RenderEnabledItem = new ToolStripMenuItem()
             {
                 Text = "Wallpaper Enabled"
+            });
+
+            menu.Items.Add(OpenDevToolsItem = new ToolStripMenuItem()
+            {
+                Text = "Open DevTools"
             });
 
             menu.Items.Add(ExitItem = new ToolStripMenuItem()
