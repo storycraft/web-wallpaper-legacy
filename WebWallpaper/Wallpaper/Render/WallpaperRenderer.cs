@@ -23,7 +23,7 @@ namespace WebWallpaper.Wallpaper.Render
 
         public ScreenManager ScreenManager { get; }
 
-        public IRenderTarget RenderTarget { get => WebWallpaper.BrowserManager.RenderTarget; }
+        public IRenderTarget RenderTarget { get; set; }
 
         public bool Initialized { get; private set; }
 
@@ -38,6 +38,8 @@ namespace WebWallpaper.Wallpaper.Render
 
             WebWallpaper = webWallpaper;
             ScreenManager = new ScreenManager();
+
+            RenderTarget = WebWallpaper.BrowserManager.RenderTarget;
 
             RenderEnabled = webWallpaper.ConfigManager.CurrentConfig.RenderEnabled;
 
@@ -84,6 +86,8 @@ namespace WebWallpaper.Wallpaper.Render
                     {
                         RenderTarget.Draw(this, hdc, memDc);
                     }
+
+                    System.Threading.Thread.Sleep(1);
                 }
             } catch (Exception e)
             {

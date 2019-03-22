@@ -44,13 +44,11 @@ namespace WebWallpaper.Wallpaper
                 BrowserManager.Browser.Size = wallpaperSize;
             }
 
-            Bitmap bitmap = BrowserManager.Browser.GetRenderData();
-
-            if (bitmap == null)
-                return;
-
-            using (bitmap)
+            using (Bitmap bitmap = BrowserManager.Browser.GetRenderData())
             {
+                if (bitmap == null)
+                    return;
+
                 IntPtr hBitmap = bitmap.GetHbitmap();
 
                 NativeWin32.SelectObject(memDc, hBitmap);

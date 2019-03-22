@@ -46,7 +46,6 @@ namespace WebWallpaper.Input
             using (var hookFactory = new EventHookFactory())
             {
                 mouseWatcher = hookFactory.GetMouseWatcher();
-                mouseWatcher.Start();
                 mouseWatcher.OnMouseInput += (s, e) =>
                 {
                     try
@@ -88,9 +87,11 @@ namespace WebWallpaper.Input
                         Logger.Error("Error on input update " + ex);
                     }
                 };
-            }
 
-            while (Listening) ;
+                mouseWatcher.Start();
+
+                while (Listening) ;
+            }
 
             mouseWatcher.Stop();
         }
