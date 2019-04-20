@@ -13,14 +13,15 @@ namespace WebWallpaper.Config
         public Bindable<bool> RenderEnabled { get; }
         public Bindable<bool> HandleMovement { get; }
         public Bindable<bool> ClickEnabled { get; }
+        public Bindable<bool> VSyncMode { get; }
 
-        public ConfigEntry(string startURL = "", bool renderEnabled = false, bool handleMovement = false, bool clickEnabled = false)
+        public ConfigEntry(string startURL = "", bool renderEnabled = false, bool handleMovement = false, bool clickEnabled = false, bool vsyncMode = true)
         {
             StartURL = new Bindable<string>(startURL);
             RenderEnabled = new Bindable<bool>(renderEnabled);
             HandleMovement = new Bindable<bool>(handleMovement);
             ClickEnabled = new Bindable<bool>(clickEnabled);
-
+            VSyncMode = new Bindable<bool>(vsyncMode);
         }
     }
 

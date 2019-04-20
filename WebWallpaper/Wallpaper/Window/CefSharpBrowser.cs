@@ -48,6 +48,8 @@ namespace WebWallpaper.Wallpaper.Window
             }
         }
 
+        public bool ShouldDraw { get; set; }
+
         public CefSharpBrowser(BrowserSettings settings)
         {
             CefSharp.BrowserSettings browserSettings = new CefSharp.BrowserSettings();
@@ -75,9 +77,16 @@ namespace WebWallpaper.Wallpaper.Window
 
             while (!Browser.IsBrowserInitialized) { System.Threading.Thread.Sleep(1); }
 
+            Browser.Paint += InvalidateDraw;
+
             Browser.SetZoomLevel(1.0);
 
             Browser.Load(lastSetURL);
+        }
+
+        internal void InvalidateDraw(object sender, OnPaintEventArgs e)
+        {
+            ShouldDraw = true;
         }
 
         public void Stop()

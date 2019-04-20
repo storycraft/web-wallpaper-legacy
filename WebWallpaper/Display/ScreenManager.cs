@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WebWallpaper.Native;
 
 namespace WebWallpaper.Display
 {
@@ -28,9 +29,21 @@ namespace WebWallpaper.Display
             }
         }
 
+        public int WallpaperRefreshRate
+        {
+            get;
+        }
+
         public ScreenManager()
         {
-
+            NativeWin32.DEVMODE devMode = new NativeWin32.DEVMODE();
+            if (!NativeWin32.EnumDisplaySettings(Screen.PrimaryScreen.DeviceName, NativeWin32.ENUM_CURRENT_SETTINGS, ref devMode))
+            {
+                WallpaperRefreshRate = 250;
+            } else
+            {
+                WallpaperRefreshRate = devMode.dmDisplayFrequency;
+            }
         }
     }
 }

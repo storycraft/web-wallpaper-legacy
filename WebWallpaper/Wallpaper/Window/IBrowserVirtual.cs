@@ -17,6 +17,8 @@ namespace WebWallpaper.Wallpaper.Window
         bool Started { get; }
         bool Ready { get; }
 
+        bool ShouldDraw { get; set; }
+
         void Start();
         void Stop();
 

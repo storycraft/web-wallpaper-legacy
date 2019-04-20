@@ -36,6 +36,7 @@ namespace WebWallpaper.Config
                 CurrentConfig.RenderEnabled.Value = rawConfig.Value<bool>("renderEnabled");
                 CurrentConfig.HandleMovement.Value = rawConfig.Value<bool>("handleMovement");
                 CurrentConfig.ClickEnabled.Value = rawConfig.Value<bool>("clickEnabled");
+                CurrentConfig.VSyncMode.Value = rawConfig.Value<bool>("vsyncEnabled");
             }
             catch (Exception e)
             {
@@ -55,7 +56,8 @@ namespace WebWallpaper.Config
                     ["startURL"] = CurrentConfig.StartURL.Value,
                     ["renderEnabled"] = CurrentConfig.RenderEnabled.Value,
                     ["handleMovement"] = CurrentConfig.HandleMovement.Value,
-                    ["clickEnabled"] = CurrentConfig.ClickEnabled.Value
+                    ["clickEnabled"] = CurrentConfig.ClickEnabled.Value,
+                    ["vsyncEnabled"] = CurrentConfig.VSyncMode.Value
                 };
 
                 await ConfigStorage.Set("config.json", Encoding.UTF8.GetBytes(obj.ToString()));
@@ -72,6 +74,7 @@ namespace WebWallpaper.Config
             CurrentConfig.RenderEnabled.Value = DefaultConfig.RenderEnabled.Value;
             CurrentConfig.HandleMovement.Value = DefaultConfig.HandleMovement.Value;
             CurrentConfig.ClickEnabled.Value = DefaultConfig.ClickEnabled.Value;
+            CurrentConfig.VSyncMode.Value = DefaultConfig.VSyncMode.Value;
         }
         
     }

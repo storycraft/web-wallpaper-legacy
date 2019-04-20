@@ -12,7 +12,7 @@ namespace WebWallpaper
     {
         static void Main(string[] args)
         {
-            ConfigEntry defaultConfig = new ConfigEntry("https://google.com", true, true, false);
+            ConfigEntry defaultConfig = new ConfigEntry("https://google.com", true, true, false, true);
 
             Logger.Log("WebWallpaper started");
 

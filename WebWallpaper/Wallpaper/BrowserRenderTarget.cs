@@ -39,6 +39,11 @@ namespace WebWallpaper.Wallpaper
 
         public bool Draw(WallpaperRenderer renderer, IntPtr hdc, IntPtr memDc)
         {
+            if (!BrowserManager.Browser.ShouldDraw)
+                return false;
+
+            BrowserManager.Browser.ShouldDraw = false;
+
             Size wallpaperSize = renderer.ScreenManager.WallpaperSize;
 
             if (!BrowserManager.Browser.Size.Equals(wallpaperSize))

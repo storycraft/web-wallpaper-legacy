@@ -32,6 +32,8 @@ namespace WebWallpaper.Wallpaper.Render
 
         public Bindable<bool> RenderEnabled { get; }
 
+        public Bindable<bool> VSyncEnabled { get; }
+
         public long LastRender { get; private set; }
 
         public long FPS { get; private set; }
@@ -44,9 +46,12 @@ namespace WebWallpaper.Wallpaper.Render
             WebWallpaper = webWallpaper;
             ScreenManager = new ScreenManager();
 
+            Logger.Log("Screen Info: [size=" + ScreenManager.WallpaperSize.Width + " * " + ScreenManager.WallpaperSize.Height + ", refresh_rate=" + ScreenManager.WallpaperRefreshRate + "]");
+
             RenderTarget = WebWallpaper.BrowserManager.RenderTarget;
 
             RenderEnabled = webWallpaper.ConfigManager.CurrentConfig.RenderEnabled;
+            VSyncEnabled = webWallpaper.ConfigManager.CurrentConfig.VSyncMode;
 
             RenderEnabled.OnChange += OnRenderModeChange;
         }
@@ -100,7 +105,8 @@ namespace WebWallpaper.Wallpaper.Render
                     FPS = (now - LastRender) / 1000;
                     LastRender = now;
 
-                    System.Threading.Thread.Sleep(1);
+                    if (VSyncEnabled.Value)
+                        System.Threading.Thread.Sleep(1000 / ScreenManager.WallpaperRefreshRate);
                 }
             } catch (Exception e)
             {
